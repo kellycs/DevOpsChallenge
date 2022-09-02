@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sinatra-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sinatra-server
+  template:
+    metadata:
+      labels:
+        app: sinatra-server
+    spec:
+      containers:
+        - name: sinatra-server
+          image: 290668651550.dkr.ecr.us-east-1.amazonaws.com/sinatra-ruby:1.0.0
+          imagePullPolicy: Always
+          command: ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "8080"]
+          env:
+            - name: SUPERSECRETACCESSKEY
+              value: "foo"
+          ports:
+            - name: http-port
+              containerPort: 8080
+      nodeSelector:
+        type: server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sinatra-service
+spec:
+  ports:
+    - name: http-port
+      port: 80
+      targetPort: http-port
+      protocol: TCP
+  selector:
+    app: sinatra-server
