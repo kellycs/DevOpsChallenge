@@ -16,8 +16,13 @@ For this challenge you will need a Github account. You should have the following
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 ## Getting started
-You will start by forking the repo [DevOps Challenge](https://github.com/Breeze-Aviation/DevOpsChallenge)
-When you are finished please send an email to devadmin@flybreeze.com.
+- You will start by forking the repo [DevOps Challenge](https://github.com/Breeze-Aviation/DevOpsChallenge)
+- Setup AWS credentials
+- Fix IaC
+- Run Terraform
+- Setup kubeconfig
+- Deploy kubernetes resources
+- When you are finished please send an email to devadmin@flybreeze.com with a link to your forked branch
 
 ## Hints
 You will find various issues from missing terraform resources to syntax issues. Remember the end goal is to have one service (curl) to communicate with the other service (ruby sinatra). If all is working properly you should get a response body stating "It works!"
@@ -25,4 +30,4 @@ You will find various issues from missing terraform resources to syntax issues. 
 You may find this command helpful to pull in the EKS config:
 `aws eks --region $(terraform output -raw region) update-kubeconfig --name $(terraform output -raw cluster_name)`
 
-If you receive a response body "Denied" then you are probably missing the access key. 
+If you receive a response body "Denied" then you are probably missing the access key.
