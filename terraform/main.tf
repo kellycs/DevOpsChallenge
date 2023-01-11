@@ -39,8 +39,8 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    one = {
-      name = "node-group-1"
+    server = {
+      name = "ng-server"
 
       instance_types = ["t2.micro"]
 
@@ -61,8 +61,8 @@ module "eks" {
       }
     }
 
-    two = {
-      name = "node-group-2"
+    client = {
+      name = "ng-client"
 
       instance_types = ["t2.micro"]
 
