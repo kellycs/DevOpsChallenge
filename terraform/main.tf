@@ -2,6 +2,7 @@ provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
 }
+# Could delploy the kubernetes resources potentially from here.
 
 provider "aws" {
   region = var.region
@@ -23,11 +24,16 @@ module "eks" {
   version = "~> 19.0"
 
   cluster_name    = local.cluster_name
+  cluster_endpoint_public_access = true
+  # Added public access since we are not connecting from a vpn or otherwise on the same network as the control plane
   cluster_version = "1.24"
-  cluster_secure  = true
+  # Not in current module?
+  #cluster_secure  = true
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.public_subnets
+# Nodes and control plane could be put into a private subnet and probably shouldn't be public. Examples:
+# https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/complete/main.tf
 
   eks_managed_node_group_defaults = {
     ami_type = "AL2_x86_64"
@@ -64,7 +70,7 @@ module "eks" {
     client = {
       name = "ng-client"
 
-      instance_types = ["t2.micro"]
+      instance_types = ["t2.small"]
 
       min_size     = 1
       max_size     = 2
@@ -120,6 +126,7 @@ resource "aws_security_group" "node_group_one" {
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
+# ssh access globally is probably not needed, might be handy for sandboxing but otherwise not needed, use bastion host
 
   ingress {
     from_port = 80
@@ -127,7 +134,6 @@ resource "aws_security_group" "node_group_one" {
     protocol  = "tcp"
     security_groups = [aws_security_group.node_group_two.id]
   }
-
 }
 
 resource "aws_security_group" "node_group_two" {
@@ -140,6 +146,7 @@ resource "aws_security_group" "node_group_two" {
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
+# ssh access globally is probably not needed, might be handy for sandboxing but otherwise not needed, use bastion host 
 
   egress {
     from_port        = 0
@@ -148,18 +155,20 @@ resource "aws_security_group" "node_group_two" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
 }
+# Possible opportunity to limit egress
 
 variable "region" {
   description = "AWS region"
   type        = string
-  default     = "us-east-2"
+  default     = "us-east-1"
 }
 
+# updated to lock to a specific compatible provider version
 terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.15.0"
+      version = "~> 4.47.0"
     }
 
     random = {
@@ -167,8 +176,8 @@ terraform {
       version = "3.1.0"
     }
   }
-
-  required_version = "~> 1.2.0"
+# updated to use latest version available
+  required_version = "~> 1.3.0"
 }
 
 module "vpc" {

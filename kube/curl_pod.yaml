@@ -8,10 +8,13 @@ spec:
       image: curlimages/curl
       command: ["/bin/sh","-c"]
       args:
-        - sleep 5; watch -n 10 "curl -H '$SUPERSECRETHEADER' sinatra-service"
+        - sleep 5; watch -n 10 "curl -H \"$SUPERSECRETHEADER\" sinatra-service"
       tty: true
       env:
         - name: SUPERSECRETHEADER
           value: "SUPERSECRETACCESSKEY: foob"
+      resources:
+        requests:
+           memory: 512M
   nodeSelector:
     type: client

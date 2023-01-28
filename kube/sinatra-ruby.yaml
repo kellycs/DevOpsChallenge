@@ -19,7 +19,7 @@ spec:
           command: ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "8080"]
           env:
             - name: SUPERSECRETACCESSKEY
-              value: "foo"
+              value: "foob"
           ports:
             - name: http-port
               containerPort: 8080
